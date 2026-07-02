@@ -1,0 +1,142 @@
+openapi: 3.0.3
+info:
+  title: hyperac API
+  version: 0.0.1
+  description: Seemless AC controls
+paths:
+  /api/v1/ac/power/:
+    get:
+      operationId: v1_ac_power_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ACPowerStatusResponse'
+          description: ''
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HomeAssistantErrorResponse'
+          description: ''
+    post:
+      operationId: v1_ac_power_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ACPowerCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ACPowerCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ACPowerCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ACPowerCommandResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ACPowerCommandInvalidResponse'
+          description: ''
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HomeAssistantErrorResponse'
+          description: ''
+components:
+  schemas:
+    ACPowerCommandInvalidResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+      required:
+      - detail
+    ACPowerCommandRequest:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/ACPowerCommandRequestActionEnum'
+      required:
+      - action
+    ACPowerCommandRequestActionEnum:
+      enum:
+      - 'on'
+      - 'off'
+      - toggle
+      type: string
+      description: |-
+        * `on` - On
+        * `off` - Off
+        * `toggle` - Toggle
+    ACPowerCommandResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        action:
+          $ref: '#/components/schemas/ACPowerCommandResponseActionEnum'
+        result: {}
+      required:
+      - action
+      - result
+      - success
+    ACPowerCommandResponseActionEnum:
+      enum:
+      - 'on'
+      - 'off'
+      - toggle
+      type: string
+      description: |-
+        * `on` - on
+        * `off` - off
+        * `toggle` - toggle
+    ACPowerStatusResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        result: {}
+      required:
+      - result
+      - success
+    HomeAssistantErrorResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+        error:
+          type: string
+      required:
+      - detail
+      - error
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
