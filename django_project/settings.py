@@ -24,13 +24,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-^z%2lkz*(&3m0wr=regt548qhf$tp*a9ef2vyz$@4k12yobfs9"
+SECRET_KEY = env(
+    "SECRET_KEY",
+    default="django-insecure-^z%2lkz*(&3m0wr=regt548qhf$tp*a9ef2vyz$@4k12yobfs9",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=not DEBUG)
+CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=not DEBUG)
 
 # Application definition
 
@@ -83,7 +92,7 @@ WSGI_APPLICATION = "django_project.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": env("SQLITE_PATH", default=str(BASE_DIR / "db.sqlite3")),
     }
 }
 
@@ -140,9 +149,9 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
 }
 
-HOME_ASSISTANT_URL = env("HOME_ASSISTANT_URL")
-HOME_ASSISTANT_TOKEN = env("HOME_ASSISTANT_TOKEN")
-HOME_ASSISTANT_AC_ENTITY_ID = env("HOME_ASSISTANT_AC_ENTITY_ID")
+HOME_ASSISTANT_URL = env("HOME_ASSISTANT_URL", default="")
+HOME_ASSISTANT_TOKEN = env("HOME_ASSISTANT_TOKEN", default="")
+HOME_ASSISTANT_AC_ENTITY_ID = env("HOME_ASSISTANT_AC_ENTITY_ID", default="")
 
 if DEBUG:
     WHITENOISE_USE_FINDERS = True

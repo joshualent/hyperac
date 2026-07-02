@@ -12,8 +12,7 @@ COPY . .
 
 RUN uv sync --frozen --no-dev
 
-ENV DEBUG=False \
-    DJANGO_VITE_DEV_MODE=false
+ENV DEBUG=False 
 
 RUN uv run python manage.py collectstatic --noinput
 
